@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<title>Prop + Hedge Calculator</title>
+</head>
+<body>
+<main class="app">
+<header class="top">
+  <div>
+    <div class="eyebrow">SCENARIO ENGINE</div>
+    <h1>Prop + Hedge Calculator</h1>
+    <p>Mobile execution planner for finite W/L scenarios.</p>
+  </div>
+  <button id="installBtn" class="ghost hidden">Install</button>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <button class="tab active" data-tab="setup">Setup</button>
+  <button class="tab" data-tab="scenarios">Scenarios</button>
+  <button class="tab" data-tab="timeline">Timeline</button>
+</nav>
+
+<section id="setup" class="panel active">
+  <div class="section-title"><h2>Account rules</h2><span id="validation" class="status">Ready</span></div>
+  <div class="grid">
+    <label>Account size ($)<input id="account" type="number" value="6000" min="1" step="1"></label>
+    <label>Risk / trade (%)<input id="risk" type="number" value="1" min="0.01" step="0.1"></label>
+    <label>Phase 1 target (%)<input id="p1" type="number" value="8" min="0.1" step="0.1"></label>
+    <label>Phase 2 target (%)<input id="p2" type="number" value="5" min="0.1" step="0.1"></label>
+    <label>Daily loss limit (%)<input id="daily" type="number" value="5" min="0.1" step="0.1"></label>
+    <label>Maximum drawdown (%)<input id="maxdd" type="number" value="10" min="0.1" step="0.1"></label>
+    <label>RR<select id="rr"><option value="1">1:1</option><option value="1.5" selected>1:1.5</option><option value="2">1:2</option><option value="2.5">1:2.5</option></select></label>
+    <label>Max trades / stage<input id="maxTrades" type="number" value="10" min="1" max="12" step="1"></label>
+  </div>
+
+  <div class="section-title"><h2>Hedge model</h2></div>
+  <div class="grid">
+    <label>Initial cost / hedge capital ($)<input id="fee" type="number" value="29.99" min="0" step="0.01"></label>
+    <label>Hedge $ per 1% prop progress<input id="hedgePerPct" type="number" value="2.999" min="0" step="0.001"></label>
+    <label>Hedge $ per 1.00 lot<input id="hedgePerLot" type="number" value="60" min="0.01" step="0.01"></label>
+    <label>Funded reward share (%)<input id="share" type="number" value="80" min="0" max="100" step="1"></label>
+    <label>Performance reward ($)<input id="reward" type="number" value="117" min="0" step="0.01"></label>
+    <label>Funded capital-secure target (%)<input id="securePct" type="number" value="2" min="0" step="0.1"></label>
+  </div>
+  <p class="note">Hedge V1 is configurable: the initial fee is the starting hedge capital. The “$ per 1% prop progress” rule controls how much hedge capital is synchronized as the prop account advances. Exact broker/hedge instrument mechanics are not assumed.</p>
+
+  <div class="actions">
+    <button id="run" class="primary">Run all valid scenarios</button>
+    <button id="demo" class="secondary">Load example</button>
+  </div>
+</section>
+
+<section id="scenarios" class="panel">
+  <div class="metrics" id="metrics"></div>
+  <div class="section-title"><h2>Scenario branches</h2><span id="branchCount" class="status"></span></div>
+  <div class="filters">
+    <select id="filter"><option value="all">All branches</option><option value="FUNDED">Funded</option><option value="DD STOP">DD stopped</option><option value="HORIZON">Horizon</option></select>
+    <input id="search" type="search" placeholder="Search path e.g. WWL">
+  </div>
+  <div class="table-wrap"><table><thead><tr><th>#</th><th>Path</th><th>Trades</th><th>R</th><th>Stage</th><th>Status</th><th>Hedge</th></tr></thead><tbody id="scenarioRows"></tbody></table></div>
+  <div id="scenarioDetail" class="detail hidden"></div>
+</section>
+
+<section id="timeline" class="panel">
+  <div class="section-title"><h2>Execution timeline</h2><span class="status">Selected scenario</span></div>
+  <div id="timelineEmpty" class="empty">Run scenarios and tap a branch to build its trade-by-trade Prop + Hedge ledger.</div>
+  <div id="timelineContent" class="hidden">
+    <div class="metrics" id="timelineSummary"></div>
+    <div class="table-wrap"><table><thead><tr><th>Trade</th><th>Result</th><th>Stage</th><th>Prop R</th><th>Prop P&L</th><th>Hedge target</th><th>Hedge lot</th></tr></thead><tbody id="timelineRows"></tbody></table></div>
+  </div>
+</section>
+
+<footer>Planning model only. It does not guarantee passing, payout or profit.</footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
