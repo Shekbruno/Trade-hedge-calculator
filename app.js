@@ -933,4 +933,120 @@
       );
 
     qa(".panel")
-      .
+      .forEach(
+        panel =>
+          panel.classList.toggle(
+            "active",
+            panel.id === tabName
+          )
+      );
+  }
+
+  /*
+    UI
+  */
+
+  qa(".tab")
+    .forEach(
+      button =>
+        button.addEventListener(
+          "click",
+          () =>
+            activateTab(
+              button.dataset.tab
+            )
+        )
+    );
+
+  $("run")
+    ?.addEventListener(
+      "click",
+      runEngine
+    );
+
+  $("filter")
+    ?.addEventListener(
+      "change",
+      renderRows
+    );
+
+  $("search")
+    ?.addEventListener(
+      "input",
+      renderRows
+    );
+
+  $("demo")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        $("rr").value = "2.5";
+        $("maxTrades").value = "4";
+
+        runEngine();
+      }
+    );
+
+  /*
+    PWA
+  */
+
+  if (
+    "serviceWorker" in navigator
+  ) {
+    navigator.serviceWorker
+      .register("sw.js")
+      .catch(() => {});
+  }
+
+  let deferredInstall = null;
+
+  window.addEventListener(
+    "beforeinstallprompt",
+    (event) => {
+
+      event.preventDefault();
+
+      deferredInstall =
+        event;
+
+      $("installBtn")
+        ?.classList
+        .remove("hidden");
+    }
+  );
+
+  $("installBtn")
+    ?.addEventListener(
+      "click",
+      async () => {
+
+        if (!deferredInstall)
+          return;
+
+        deferredInstall.prompt();
+
+        await deferredInstall
+          .userChoice;
+
+        deferredInstall = null;
+
+        $("installBtn")
+          ?.classList
+          .add("hidden");
+      }
+    );
+
+  /*
+    Initial state.
+  */
+
+  if (
+    $("validation")
+  ) {
+    $("validation").textContent =
+      "V2 ready";
+  }
+
+})();
